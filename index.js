@@ -6,7 +6,9 @@ var pong = require('./pong');
 
 server.listen(3000);
 
-var leftInitial, rightInitial;
+var rooms = {};
+var lastRoom; 
+
 var gameState = { 
   leftLocation:{},
   rightLocation:{}, 
@@ -16,12 +18,16 @@ var gameState = {
   leftPlayerName:"",
   rightPlayerName:""
 };
+var leftInitial, rightInitial;
+var currentRoom = {leftInitial: undefined, rightInitial:undefined};
 io.on('connection', function(socket) {
   console.log("hello");
   userConnected(socket);
 });
 function userConnected(socket) { 
+  console.log("connected");
   pong.onUpdate(function(data) {
+    console.log(JSON.stringify(data));
     io.emit('battle_update', data);
   });
   socket.on('name_set', function(data) {
@@ -43,19 +49,21 @@ function userConnected(socket) {
       leftInitial = data;
       gameState.leftLocation = data;
       gameState.leftPlayerName = socket.name;
-      pong.registerPlayer(socket.name, {lat: data[0], lng: data[1]});
-      pong.registerPlayer(socket.name + 'r', {lat: data[0], lng:data[1]});
+      pong.registerPlayer(socket.name, {lat: data.lat, lng: data.lng});
+      rightInitial = socket.name + 'r';
+      pong.registerPlayer(socket.name + 'r', {lat: data.lat + .0004, lng:data.lng + .0003});
     }
     else if (rightInitial === undefined) {
       rightInitial = data;
       gameState.rightLocation = data;
       gameState.rightPlayerName = socket.name;
       console.log("right player" + socket.name);
-      pong.registerPlayer(socket.name, {lat: data[0], lng:data[1]});
-    } else {
+      pong.registerPlayer(socket.name, {lat: data.lat, lng:data.lng});
+    } else { 
+      
       io.emit('battle_ready');
       console.log(data);
-      pong.updatePlayer(socket.name, {lat: data[0], lng:data[1]});
+      pong.updatePlayer(socket.name, {lat: data.lat, lng:data.lng});
     }
   });
 }
