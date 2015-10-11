@@ -31,7 +31,9 @@ function userConnected(socket) {
 
   socket.on('disconnect', function (data) {
     Object.keys(sockets).forEach(function (key) {
-      sockets[key].disconnect();
+      if (sockets[key]) {
+        sockets[key].disconnect();
+      }
     });
     pong.reset();
     sockets = {};
