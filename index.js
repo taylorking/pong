@@ -42,6 +42,7 @@ function userConnected(socket) {
 
     if (socket.virgin) {
       console.log('registering name', socket.name);
+      console.log(data);
       pong.registerPlayer(socket.name, {
         lat: data.lat,
         lng: data.lng
@@ -50,6 +51,7 @@ function userConnected(socket) {
       socket.virgin = false;
     } else {
       console.log('updating player', socket.name);
+      console.log(data);
       pong.updatePlayer(socket.name, {
         lat: data.lat,
         lng: data.lng
