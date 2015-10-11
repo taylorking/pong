@@ -27,7 +27,6 @@ io.on('connection', function(socket) {
 function userConnected(socket) { 
   console.log("connected");
   pong.onUpdate(function(data) {
-    console.log(JSON.stringify(data));
     io.emit('battle_update', data);
   });
   socket.on('name_set', function(data) {
@@ -45,24 +44,20 @@ function userConnected(socket) {
     if(socket.name === undefined) {
       return;
     }
+    if(leftInitial ===  
     if(leftInitial === undefined) {
-      leftInitial = data;
+      leftInitial = socket.name;
       gameState.leftLocation = data;
       gameState.leftPlayerName = socket.name;
       pong.registerPlayer(socket.name, {lat: data.lat, lng: data.lng});
-      rightInitial = socket.name + 'r';
-      pong.registerPlayer(socket.name + 'r', {lat: data.lat + .0004, lng:data.lng + .0003});
     }
     else if (rightInitial === undefined) {
-      rightInitial = data;
+      rightInitial = socket.name;
       gameState.rightLocation = data;
       gameState.rightPlayerName = socket.name;
-      console.log("right player" + socket.name);
       pong.registerPlayer(socket.name, {lat: data.lat, lng:data.lng});
-    } else { 
-      
       io.emit('battle_ready');
-      console.log(data);
+    } else {       
       pong.updatePlayer(socket.name, {lat: data.lat, lng:data.lng});
     }
   });
