@@ -11,16 +11,16 @@ server.listen(3000);
 io.on('connection', function (socket) {
   console.log("hello");
   userConnected(socket);
+
+  pong.onUpdate(function (data) {
+    io.emit('battle_update', data);
+  });
 });
 
 function userConnected(socket) {
   console.log("connected");
 
   socket.virgin = true;
-
-  pong.onUpdate(function (data) {
-    io.emit('battle_update', data);
-  });
 
   socket.on('name_set', function (data) {
     socket.name = data;
